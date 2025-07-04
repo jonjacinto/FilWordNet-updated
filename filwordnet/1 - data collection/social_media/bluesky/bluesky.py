@@ -122,6 +122,7 @@ load_dotenv(".env")
 
 USER_HANDLE = os.getenv('USER_HANDLE')
 PASSWORD = os.getenv('PASSWORD')
+CURRLINK = os.getenv('CURRLINK')
 
 STOP_WORDS = " || ".join(STOP_WORDS)
 
@@ -135,7 +136,7 @@ def extract_posts_to_json(post_objects):
 
     for post in post_objects:
         post_id = post.cid
-        post_langs = ', '.join(post.record.langs)
+        post_langs = post.record.langs
         post_text = post.record.text
         post_list.append({'post_id':post_id, 
                            'text':post_text, 
@@ -143,6 +144,8 @@ def extract_posts_to_json(post_objects):
     df = pd.DataFrame(post_list, columns=['post_id',
                                            'text', 
                                            'langs'])
+    with open("C:\\Users\\JET_DSI_4090\\Documents\\project" + "\\" + "data\\" + "test.json", 'w') as f:
+        f.write(df.to_json(orient='records',lines=True))
 
 def get_posts_oneday(offset=1):
     if isinstance(offset, int) and offset in range(0,8):
@@ -168,26 +171,26 @@ def get_posts_oneday(offset=1):
 
     query = client.app.bsky.feed.search_posts(
         params = models.AppBskyFeedSearchPosts.Params(
-            q=STOP_WORDS))
+            q=STOP_WORDS, lang="en"))
     cursor_ctr += 1
     for post in query.posts:
         posts.append(post)
-        print(post.record.created_at)
         post_ctr += 1
     while cursor_ctr <= max_cursor:
         cursor = query.cursor
         query = client.app.bsky.feed.search_posts(
             params = models.AppBskyFeedSearchPosts.Params(
-                q=STOP_WORDS, cursor = cursor
+                q=STOP_WORDS, cursor = cursor, lang="en"
             )
         )
         for post in query.posts:
             posts.append(post)
-            print(post.record.created_at)
             post_ctr += 1
         cursor_ctr += 1
     print(query.cursor)
     print(f"Number of posts: {post_ctr}")
+
+    extract_posts_to_json(posts)
 
     
 
