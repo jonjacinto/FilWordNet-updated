@@ -122,7 +122,7 @@ STOP_WORDS = " || ".join(STOP_WORDS)
 
 def connect_client():
     at_client = Client()
-    at_client.login('violetluminescence.bsky.social', 'R3fraction.')
+    at_client.login('my-handle', 'password')
     return at_client
     
 
