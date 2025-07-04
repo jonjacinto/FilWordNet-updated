@@ -130,6 +130,19 @@ def connect_client():
     at_client.login(USER_HANDLE, PASSWORD)
     return at_client
     
+def extract_posts_to_json(post_objects):
+    post_list = []
+
+    for post in post_objects:
+        post_id = post.cid
+        post_langs = ', '.join(post.record.langs)
+        post_text = post.record.text
+        post_list.append({'post_id':post_id, 
+                           'text':post_text, 
+                           'langs':post_langs})
+    df = pd.DataFrame(post_list, columns=['post_id',
+                                           'text', 
+                                           'langs'])
 
 def get_posts_oneday(offset=1):
     if isinstance(offset, int) and offset in range(0,8):
@@ -159,6 +172,7 @@ def get_posts_oneday(offset=1):
     cursor_ctr += 1
     for post in query.posts:
         posts.append(post)
+        print(post.record.created_at)
         post_ctr += 1
     while cursor_ctr <= max_cursor:
         cursor = query.cursor
@@ -169,6 +183,7 @@ def get_posts_oneday(offset=1):
         )
         for post in query.posts:
             posts.append(post)
+            print(post.record.created_at)
             post_ctr += 1
         cursor_ctr += 1
     print(query.cursor)
