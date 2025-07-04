@@ -118,12 +118,11 @@ walang
 """.split()
 ))
 
-STOP_WORDS = " OR ".join(STOP_WORDS)
+STOP_WORDS = " || ".join(STOP_WORDS)
 
 def connect_client():
     at_client = Client()
-    at_client.login('my-handle', 'password')
-
+    at_client.login('violetluminescence.bsky.social', 'R3fraction.')
     return at_client
     
 
@@ -139,8 +138,10 @@ def get_posts_oneday(offset=1):
     start_time = time.time() # Log start time
     max_sleeps = 1000000
     n_sleep = 0
-    tweet_ctr = 0
-    tweets = [] # initialize empty list
+    post_ctr = 0
+    cursor_ctr = 0
+    max_cursor = 5
+    posts = [] # initialize empty list
     prev_count = 0
     sleep_time_seconds = 300
     sleep_time_minutes = sleep_time_seconds / 60
@@ -149,11 +150,26 @@ def get_posts_oneday(offset=1):
 
     query = client.app.bsky.feed.search_posts(
         params = models.AppBskyFeedSearchPosts.Params(
-            q="nasaan"))
-    print(f"Number of posts: {len(query.posts)}")
-
+            q=STOP_WORDS))
+    cursor_ctr += 1
     for post in query.posts:
-        print("-", post.record.text)
+        posts.append(post)
+        post_ctr += 1
+    while cursor_ctr <= max_cursor:
+        cursor = query.cursor
+        query = client.app.bsky.feed.search_posts(
+            params = models.AppBskyFeedSearchPosts.Params(
+                q=STOP_WORDS, cursor = cursor
+            )
+        )
+        for post in query.posts:
+            posts.append(post)
+            post_ctr += 1
+        cursor_ctr += 1
+    print(query.cursor)
+    print(f"Number of posts: {post_ctr}")
+
+    
 
 if __name__ == "__main__":
     get_posts_oneday()
