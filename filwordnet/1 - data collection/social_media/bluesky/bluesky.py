@@ -155,13 +155,13 @@ def get_posts_oneday(offset=1):
         next_day_str = next_day_datetime.strftime('%Y-%m-%d')
     else:
         return "Please input integer between 0-7 in offset parameter."
-    print(USER_HANDLE)
+    print(STOP_WORDS)
     start_time = time.time() # Log start time
     max_sleeps = 1000000
     n_sleep = 0
     post_ctr = 0
     cursor_ctr = 0
-    max_cursor = 5
+    max_cursor = 10
     posts = [] # initialize empty list
     prev_count = 0
     sleep_time_seconds = 300
@@ -176,11 +176,11 @@ def get_posts_oneday(offset=1):
     for post in query.posts:
         posts.append(post)
         post_ctr += 1
-    while cursor_ctr <= max_cursor:
+    while cursor_ctr < max_cursor:
         cursor = query.cursor
         query = client.app.bsky.feed.search_posts(
             params = models.AppBskyFeedSearchPosts.Params(
-                q=STOP_WORDS, cursor = cursor, lang="en"
+                q=STOP_WORDS, cursor = cursor
             )
         )
         for post in query.posts:
