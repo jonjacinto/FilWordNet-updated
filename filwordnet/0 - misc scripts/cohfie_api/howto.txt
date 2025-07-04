@@ -1,0 +1,14 @@
+# Activate venv
+terminal: thesis_api\Scripts\Activate.ps1
+
+# Deactivate venv
+deactivate
+
+# Install packages
+python -m pip install <package-name>    
+
+# run flask server (must name flask code with app.py)
+flask run
+
+# example GET request
+http://127.0.0.1:5000/search?query=pogi&start_year=2020&end_year=2021&source_type=social_media
