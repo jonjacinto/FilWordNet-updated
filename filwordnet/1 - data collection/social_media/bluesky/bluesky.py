@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import sys
 import signal
 import pandas as pd
+from dotenv import load_dotenv
 import os
 
 # modified version of search_all_tweets.py
@@ -117,12 +118,16 @@ tungkol
 walang
 """.split()
 ))
+load_dotenv(".env")
+
+USER_HANDLE = os.getenv('USER_HANDLE')
+PASSWORD = os.getenv('PASSWORD')
 
 STOP_WORDS = " || ".join(STOP_WORDS)
 
 def connect_client():
     at_client = Client()
-    at_client.login('my-handle', 'password')
+    at_client.login(USER_HANDLE, PASSWORD)
     return at_client
     
 
@@ -134,7 +139,7 @@ def get_posts_oneday(offset=1):
         next_day_str = next_day_datetime.strftime('%Y-%m-%d')
     else:
         return "Please input integer between 0-7 in offset parameter."
-    
+    print(USER_HANDLE)
     start_time = time.time() # Log start time
     max_sleeps = 1000000
     n_sleep = 0
